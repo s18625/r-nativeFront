@@ -1,25 +1,57 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import PropTypes from 'prop-types';
 import {SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View} from "react-native";
 import {CheckBox, ListItem} from "react-native-elements";
 import TouchableScale from 'react-native-touchable-scale';
 import {Rating, AirbnbRating} from 'react-native-ratings';
+import {Subject} from "./Subjects";
+import {useAppSelector} from "../hooks";
+import {useDispatch, useSelector} from "react-redux";
+import {incrementByAmount, setId} from "../redux_operations/subjectSelection";
 
 type Props = {
     navigation: any,
 }
 const TutorSelection: React.FC<Props> = ({navigation}) => {
+    const dispach = useDispatch();
+    const pickedSubjects = useAppSelector(state => state.subjects.tutor);
+    const idSub = useAppSelector(state => state.subjects.subId);
     class Tutor {
-        firstName: string;
-        lastName: string;
+        id:number;
+        name: string;
+        surname: string;
+        grade: number;
 
-        constructor(firstName: string, lastName: string) {
-            this.firstName = firstName;
-            this.lastName = lastName;
+        constructor(firstName: string, lastName: string,grade:number, id:number) {
+            this.name = firstName;
+            this.surname = lastName;
+            this.grade = grade;
+            this.id = id;
         }
     }
 
-    const [tutors, setTutors] = useState<Tutor[]>([new Tutor("Natalia", "Faccio"), new Tutor("szymon", "grzyfka"), new Tutor("lysy", "strzalka")]);
+    const [tutors, setTutors] = useState<Tutor[]>([])
+
+    const goNext  = (idT:number) =>{
+        let tut = tutors.filter(t=>t.id = idT);
+        dispach(setId({
+            tut
+        }));
+        navigation.navigate('SubjectTopicSelection')
+
+    }
+
+    useEffect(() => {
+        fetch('http://192.168.1.31:8080/tutor/allBySub/'+idSub)
+            .then(response => response.json())
+            .then(data => {
+                setTutors(data);
+
+            });
+
+
+    },[])
+
     return (
         <View>
             <SafeAreaView>
@@ -31,21 +63,21 @@ const TutorSelection: React.FC<Props> = ({navigation}) => {
                 <ScrollView>
                     {
                         tutors.map((tutor, index) => (
-                                <ListItem style={styles.listItem} onPress={()=>{navigation.navigate('SubjectTopicSelection')}}>
+                                <ListItem style={styles.listItem} onPress={()=>goNext(tutor.id)} key={index}>
 
                                     <ListItem.Content style={styles.button}>
                                         <ListItem.Title style={{fontSize: 30}}>
-                                            {tutor.lastName}
+                                            {tutor.surname}
                                         </ListItem.Title>
                                         <ListItem.Subtitle style={{fontSize: 20}}>
-                                            {tutor.firstName}
+                                            {tutor.name}
                                         </ListItem.Subtitle>
                                     </ListItem.Content>
 
                                     <AirbnbRating
                                         count={5}
-                                        reviews={["Terrible", "Meh", "OK", "Good", "Trzaska"]}
-                                        defaultRating={5}
+                                        reviews={["bad", "Meh", "OK", "Good", "Pch"]}
+                                        defaultRating={tutor.grade}
                                         size={20}
                                         isDisabled={true}
                                     />
@@ -78,7 +110,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         paddingVertical: 12,
-        paddingHorizontal: 32,
+        paddingHorizontal: 10,
         borderRadius: 4,
         elevation: 3,
         backgroundColor: '#becbf6',

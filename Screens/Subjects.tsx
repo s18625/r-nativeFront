@@ -1,4 +1,5 @@
 import React, {useEffect, useReducer, useState} from 'react'
+import axios from 'axios';
 import {
     Animated,
     Button,
@@ -14,16 +15,18 @@ import {Badge, ListItem} from 'react-native-elements'
 import {CheckBox, Icon} from 'react-native-elements'
 import {useDispatch, useSelector} from "react-redux";
 import {useAppDispatch, useAppSelector} from "../hooks";
-import {incrementByAmount} from "../redux_operations/subjectSelection";
+import {incrementByAmount, setSub} from "../redux_operations/subjectSelection";
 
 
 
 
 class Subject {
     name: string;
+    acronym:string;
 
-    constructor(name: string) {
+    constructor(name: string, acronym:string) {
         this.name = name;
+        this.acronym = acronym;
     }
 }
 
@@ -31,20 +34,34 @@ type MainAppProps = {
     navigation: any;
 }
 
-const Hello: React.FC<MainAppProps> = ({navigation}) => {
-    const [subjects, setSubjects] = useState<Subject[]>([
-        new Subject('Math'),
-        new Subject('Chemistry'),
-        new Subject('Physics')])
-    let [picked, setPicked] = useState<boolean[]>([true, true, true])
+const Subjects: React.FC<MainAppProps> = ({navigation}) => {
+
+    const dispach = useDispatch();
+    const [subjects, setSubjects] = useState<Subject[]>([])
+    let [picked, setPicked] = useState<boolean[]>([])
     const pickedSubjects = useAppSelector(state => state.subjects.value);
+
+
     useEffect(() => {
-        setPicked(pickedSubjects);
+        fetch('http://192.168.1.31:8080/subject/all')
+            .then(response => response.json())
+            .then(data => {
+                setSubjects(data);
+            });
+        // setPicked(pickedSubjects);
+        // dispach()
+
+
     },[])
+    const goNext =()=>{
+        if(picked.filter(s=>s).length>0) navigation.navigate('Tutors')
+    }
+
     const updateCheckboxes = (i: number) => {
         let _picked = [...picked];
         _picked[i] = !_picked[i];
         dispatch(incrementByAmount(_picked));
+        dispach(setSub(i+1));
         setPicked(_picked);
     }
     const dispatch = useAppDispatch();
@@ -60,7 +77,7 @@ const Hello: React.FC<MainAppProps> = ({navigation}) => {
                     subjects.map((subject, index) => (
                         <CheckBox size={35} textStyle={{fontSize:30} }
                             key={index}
-                            title={subject.name}
+                            title={subject.acronym}
                             checked={picked[index]}
                             onPress={() => {
                                 updateCheckboxes(index)
@@ -70,7 +87,7 @@ const Hello: React.FC<MainAppProps> = ({navigation}) => {
                 }
             </ScrollView>
             <View>
-                <TouchableOpacity activeOpacity={0.7} style={styles.button} onPress={()=>{navigation.navigate('Tutors')}}>
+                <TouchableOpacity activeOpacity={0.7} style={styles.button} onPress={()=>goNext()}>
                     <Text style={styles.text}>{'Choose Tutor'}</Text>
                 </TouchableOpacity>
 
@@ -82,7 +99,7 @@ const Hello: React.FC<MainAppProps> = ({navigation}) => {
     )
 }
 
-export default Hello
+export default Subjects
 export {Subject}
 
 const styles = StyleSheet.create({

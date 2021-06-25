@@ -22,12 +22,13 @@ import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
 import {Icon} from 'react-native-elements'
 import {SafeAreaProvider} from 'react-native-safe-area-context';
+import {color} from "react-native-elements/dist/helpers";
 
 type MainAppProps = {
     navigation: any;
 }
 
-const MainApp: React.FC<MainAppProps> = ({navigation}) => {
+const HelloScren: React.FC<MainAppProps> = ({navigation}) => {
     const isDarkMode = useColorScheme() === 'dark';
 
     const backgroundStyle = {
@@ -42,22 +43,11 @@ const MainApp: React.FC<MainAppProps> = ({navigation}) => {
                     style={backgroundStyle}>
                     <View>
                         <Text style={styles.header}>
-                        zdaj.SE
+                            Your private lesson has been added
                         </Text>
                     </View>
-                    <View
-                        style={{
-                            backgroundColor: isDarkMode ? Colors.black : Colors.white,
-                        }}>
-
-                        <TouchableOpacity
-                            style={styles.but}
-                            activeOpacity={0.7}
-                            onPress={() => {
-                                navigation.navigate('Subjects')
-                            }}>
-                            <Text style={styles.text}>{'Chose your subjects'}</Text>
-                        </TouchableOpacity>
+                    <View>
+                            <Icon type="material" iconStyle={{color: "green"}} name="done" size={100} style={{marginRight: 10,color:"blue"}}/>
 
                     </View>
                 </ScrollView>
@@ -67,7 +57,7 @@ const MainApp: React.FC<MainAppProps> = ({navigation}) => {
     )
 }
 
-export default MainApp
+export default HelloScren
 
 const styles = StyleSheet.create({
     sectionContainer: {
@@ -98,6 +88,7 @@ const styles = StyleSheet.create({
         height: 90,
 
 
+
     },
     text: {
         fontSize: 30,
@@ -106,9 +97,11 @@ const styles = StyleSheet.create({
         color: 'white',
     },
     header:{
-        fontSize: 50,
+        fontSize: 40,
+        textAlign:"center",
         alignSelf: 'center',
-        marginVertical: 40
+        marginVertical: 40,
+        color:"black",
     }
 });
 

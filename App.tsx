@@ -2,12 +2,13 @@ import React from 'react';
 
 import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
-import MainApp from './Screens/MainApp';
-import Hello from './Screens/Hello';
+import HelloScren from './Screens/HelloScren';
+import Subjects from './Screens/Subjects';
 import store from './store'
 import {Provider} from 'react-redux'
 import TutorSelection from "./Screens/TutorSelection";
 import SubjectTopicsSelection from "./Screens/SubjectTopicsSelection";
+import End from "./Screens/End";
 
 const App = () => {
 
@@ -18,12 +19,13 @@ const App = () => {
                 <Stack.Navigator>
                     <Stack.Screen
                         name="Log in"
-                        component={MainApp}
+                        component={HelloScren}
                         options={{title: 'Welcome'}}
                     />
-                    <Stack.Screen name="Subjects" component={Hello}/>
+                    <Stack.Screen name="Subjects" component={Subjects}/>
                     <Stack.Screen name="Tutors" component={TutorSelection}/>
                     <Stack.Screen name="SubjectTopicSelection" component={SubjectTopicsSelection}/>
+                    <Stack.Screen name="End" component={End}/>
                 </Stack.Navigator>
             </NavigationContainer>
         </Provider>
